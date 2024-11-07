@@ -1,0 +1,101 @@
+# week10
+
+- latent space
+    - 데이터를 더 낮은 차원으로 압축하여 표현하는 공간
+    - 모델이 데이터의 중요한 특성이나 패턴을 압축된 형태로 표현할 수 있도록 하는데, 이를 통해 원본 데이터의 구조적 정보를 보존하면서도 필요한 연산을 더 효율적으로 수행 가능
+    - representation learning - x → f(x) → y
+    - 고차원 된 데이터를 저차원으로 바꾸는 것
+    - pcs도 일정의 latent vecter를 만드는 것과 같다.
+    - 출력 데이터로부터 원본데이터를 가져올 수 있다.
+
+- MLE : Maximum Likelihood Estimation, 최대 우도 추정
+    - 관측된 데이터를 가장 잘 설명할 수 있는 파라미터를 찾기 위해 우도를 최대화 하는 방법
+    - likehood : 주어진 파라미터 값에 따라 **데이터가 관측될 가능성,**
+    - 근사하다.
+    - [https://medium.com/@mathparracho/variational-autoencoders-vaes-cvaes-β-vaes-generative-intuition-practice-4b7b4011f55b](https://medium.com/@mathparracho/variational-autoencoders-vaes-cvaes-%CE%B2-vaes-generative-intuition-practice-4b7b4011f55b)
+- defusion model, vae, gan - 원본 도메인부터 잠재된 벡터를 만들고 난 후, 잠재된 벡터로부터 새로운 도메인을 받을 수 있어야 한다.
+    - au - 입력데이터로부터 다시 데이터를 복원하는 것, 데이터가 주어졌을 때 확률분포를 받자?
+    
+    ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/098b8f36-c66d-4641-adf9-693ce54b3415/67366614-05a0-44e6-bd82-d840dd9fa1ca/image.png)
+    
+
+ ? 우리가 x값을 얻은 것으로 추론하자 변형을 해서 근사한 값으로 가자
+
+** ae, vae, gan **
+
+- auto encoder
+    - 목적 : **정보를 압축**해서 다시 원래 타원으로 복원하는 과정을 거쳐서 원본 데이터와 유사한 출력을 생성한다.
+    - encoder - latent space - decoder
+    - pca의 목적 또한 정보를 압축하는 것  → 정보를 압축하는 이유는 무엇인가? 차원을 줄이면 학습하기 쉽다. 원본데이터 feature
+- variational auto encoder -vae
+    - 목적 : 정보 생성 / 데이터를 더 유연하고 생성적인 방식으로 표현하도록 설계된 모델
+    - 확률적 잠재 공간 - 잠재 벡터 샘플링 - KL Divergence
+    - VAE는 특히 **데이터 생성(generative)** 모델로 활용되며, 기존 오토인코더와 달리 잠재 공간(latent space)에서 **연속적이고 의미 있는 분포를 학습**해 새로운 데이터를 생성할 수 있음
+    - 장점 : 이미지 생성, 시계열 데이터 생성, 연속적인 잠재 공간 따라서 잠재 벡터를 조금씩 바꾸면 원본 데이터와 유사하면서도 새로운 데이터 생성 가능 → VAE는 데이터의 생성 및 보강, 이상치 탐지, 노이즈 제거와 같은 작업에서 유용
+    - KL Divergence :  두 분산 간의 거리를 최소화 하는 것
+    - `reconstruction_loss **+** kl_loss_weighted`
+    - results=vae_model.fit(X_train,X_train,shuffle=True,epochs=32,batch_size=256) → 여기에 denoising 추가해라!!
+- GAN
+    - 목적 :**두 개의 신경망이 경쟁적으로 학습하면서 현실과 같은 데이터를 생성**
+    - 생성자 generator - 사실적인 데이터 생성)
+    - 판별자 discriminator - 실제데이터인지 생성자가 만든 데이터인지 구별하는 네트워크  → 진짠지 가짠지 구분이니까 binary 따라서 sigmoid 함수를 쓴다.
+    - 학습 단계
+        1. **랜덤 노이즈 생성**: 생성자에게 랜덤한 노이즈 벡터를 입력합니다.
+        2. **가짜 이미지 생성**: 생성자는 이 노이즈 벡터를 바탕으로 가짜 이미지를 생성합니다.
+        3. **실제 및 가짜 이미지 데이터 생성**: 실제 이미지와 가짜 이미지를 적절히 섞어 판별자에게 입력합니다.
+        4. **판별자 학습**: 판별자는 실제 이미지를 1로, 가짜 이미지를 0으로 구별하도록 학습합니다.
+        5. **생성자 학습**: 생성자는 판별자를 속이기 위해 가짜 이미지를 더욱 정교하게 생성하도록 학습합니다.
+    - 생성 모델의 목표 : z로 부터 g로 만드는 것, 모델 g는 원래 데이터의 분포를 근사할 수 있도록 한다.
+    - 레이블에 상관이 없다.
+    - 장점 : GAN은 **이미지 생성**, **스타일 변환**, **비디오 생성**, **의료 이미지 보강,텍스트에서 이미지 생성,** 저해상도 이미지를 고해상도로 변환(슈퍼 해상도) 등에서 많이 활용할 수도 있음
+    - 단점 (시험에 나옴)
+        - mode collapse  - 다양성 부족, 생성자가 특정 패턴의 데이터만 반복해서 생성하는 현상
+        - GAN은 학습 과정이 불안정해 모델이 수렴하지 않거나 모드 붕괴(mode collapse)가 발생할 수 있음
+    - gan의 변형
+        - CGAN : 조건을 추가하여 특정한 조건에 맞는 데이터를 생성할 수 있는 GAN , 입력 노이즈 뿐만 아니라 추가적인 조건 (label or feature)을 입력받아 그 조건에 맞는 데이터를 생성
+            - 생성자 부분에서 조건에 맞는 데이터를 생성하도록하고, 판별자는 생성된 데이터가 진짜인지 가짜인지 + 조건에 부합하는지 평가
+            - 장점 : 특정 조건에 맞는 이미지를 생성할 수 있음
+        - DCGAN : Deep Convolutional GAN - **합성곱,  신경망(CNN)을 사용하여 이미지 생성을 개선한 모델, gan 모델의 기본 구조에 합성곱 계층을 추가햇 더 현실적인 고해상도 이미지를 만든다.**
+        - Cycle GAN : 두 가지 서로 다른 도메인 간에 데이터의 직접적인 매칭 없이 이미지 스타일을 변환하는 GAN 모델 , 두 이미지 도메인 간 변환 수행
+          - CycleGAN은 이 아이디어를 보다 멋지게 확장해서 A-Style → B-Style → A-Style로 다시 돌려보는 과정, 즉 Cycle 이라는 아이디어를 도입한 멋진 연구. 이를 통해 스타일 변환과 이미지 복원 가능
+    
+    ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/098b8f36-c66d-4641-adf9-693ce54b3415/4c78bb9f-5397-465f-a037-1461084fdace/image.png)
+     - pro gan, style gan
+    - gan code
+        - https://github.com/whynesspower/1D-Generative-Adversarial-Network-From-Scratch-in-Keras/blob/main/1D-GAN-Python-Code-Jupiter.ipynb
+
+    - Diffussion model 
+        **Diffusion Model**은 **이미지 생성 모델**, **이미지 생성** 과정에서 **점진적인 노이즈 추가와 제거**를 통해 데이터를 생성
+        Diffusion Model
+        1. **Forward Diffusion (노이즈 추가)**:
+            - 원본 이미지에 점진적으로 **노이즈**를 추가하는 과정이에요. 원본 이미지는 점차적으로 **완전히 무작위화된 노이즈**로 변해가고, 이 과정은 여러 단계에 걸쳐 이루어집니다.
+            - 예를 들어, 이미지가 여러 번의 단계에 걸쳐 점차적으로 흐려지고, 결국에는 완전한 랜덤 노이즈가 됩니다.
+        2. **Reverse Diffusion (노이즈 제거)**:
+            - 이후, 노이즈가 추가된 이미지를 다시 원본 이미지로 **복원하는 과정**이에요. 이 과정에서는 **정확한 노이즈 제거**를 통해 원본 이미지의 정보를 복원합니다. 이 과정은 **신경망**을 사용하여 점진적으로 이미지를 생성해 나갑니다.
+            - Diffusion Model에서는 **노이즈 제거 모델**이 훈련되어, 각 단계에서 어떻게 노이즈를 제거할지를 학습합니다.
+        
+        ### Diffusion Model의 학습과정
+        Diffusion Model은 **주어진 이미지**에 대해 노이즈를 추가하고, 그 노이즈를 **복원하는 방법**을 학습
+        **디노이징(denoising) 과정**을 통해 데이터를 생성
+        - **디노이징 네트워크** :  각 단계에서 **노이즈를 제거**하는 방식으로 학습, 원본 이미지에서 점진적으로 노이즈를 제거하면서, 처음부터 끝까지 이미지를 복원할 수 있도록 훈련.
+        
+        ### Diffusion Model의 장점
+         - **고품질 이미지 품질, 학습의 안정성, 조건부 모델**:
+            - Diffusion Model은 GAN보다 훨씬 더 **고품질의 이미지**를 생성하는 경향 있음. 특히, 더 복잡한 이미지나 고해상도의 이미지를 생성할 때 유리.
+        
+        ### Diffusion Model의 단점
+        1. *계산 비용**:
+            - Diffusion Model은 GAN이나 VAE보다 더 많은 **계산 자원**을 소모. 여러 단계에 걸쳐 노이즈를 추가하고 제거해야 하므로, 학습과 생성에 시간이 오래 걸림
+        2. **느린 생성 속도**:
+            - 이미지 생성을 위한 과정이 여러 단계에 걸쳐 진행되기 때문에, **이미지 생성 속도**가 상대적으로 느림
+        
+        ### 유명한 Diffusion Model
+        - **DDPM (Denoising Diffusion Probabilistic Models)**: Diffusion Model의 가장 대표적인 예로, 점진적인 노이즈 제거 방식을 통해 고품질 이미지를 생성
+        - **Stable Diffusion**: 최근 인공지능 분야에서 매우 유명한 모델로, 다양한 이미지 생성에 사용, 특히 텍스트 설명을 기반으로 이미지를 생성하는 데 강력한 성능
+        
+        ### 요약
+        Diffusion Model은 GAN이나 VAE와는 다른 방식으로 이미지를 생성하는 모델, 
+        **점진적으로 노이즈를 추가하고 제거**하는 방식으로 데이터를 생성 높은 이미지 품질과 안정적인 학습을 제공하는 장점이 있지만, 
+        계산 비용과 생성 속도에서 단점이 있을 수 있음
+  
+z
