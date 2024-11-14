@@ -1,0 +1,84 @@
+### 사전학습 모델 (Pre-trained Model)
+사전학습 모델은 이미 다른 데이터셋(예: ImageNet)에서 학습된 모델을 가져와서 사용하는 방식이다. 이 방식은 모델이 이미 많은 정보를 가지고 있어, 
+새로운 문제에 대해 학습 시간을 단축할 수 있다는 장점이 있다.
+**장점:**
+- 이미 잘 학습된 가중치와 bias를 사용할 수 있어서 학습 시간이 적게 듦.
+- 모델이 잘 설계되어 있으므로, 좋은 성능을 보장함.
+- 가설이 일반적인 입력값을 다루고, 출력은 더 구체적인 정보를 제공할 수 있음.
+
+**VGG16 모델 예시:**
+VGG16 모델은 ImageNet 데이터셋에서 학습된 가중치를 사용하여, 이미지 분류 문제를 해결하는 데 사용된다. 
+코드에서 `VGG16` 모델을 불러와, 마지막 완전 연결층을 제외하고 새로운 분류기를 추가한 뒤, 
+가중치를 고정하여 미세 조정을 한다. 이렇게 하면 이미 학습된 가중치를 그대로 활용하면서 새로운 문제에 맞게 모델을 적응시킬 수 있다.
+
+### 미세 조정 (Fine-Tuning)
+사전학습 모델을 사용할 때, 그 모델의 일부 층은 학습된 가중치를 고정(freeze)하고, 
+새로운 층만 학습하는 방식이다. 그 후에는 필요한 경우, 모델의 일부 층을 다시 학습시키는 방법을 **fine-tuning**이라고 한다. 
+이렇게 하면 모델이 빠르게 적응하면서도 기존 학습된 지식을 유지할 수 있다.
+- 따라서 trainable를 False로 둠 (freezing)
+
+### PCA & 오토인코더
+- 둘다 encoder이다. 결국 encoder로 latent space를 만들고 dnn을 붙여서 출력이 가능하다.
+**PCA(Principal Component Analysis)**는 주성분 분석을 통해 데이터의 차원을 축소하는 방법 이 방식은 데이터의 주요한 특징을 유지하면서 차원을 줄여줌. 
+선형적인 방식으로 차원을 축소 
+- 차원 축소 2차 → 1차 : 주성분만 분석한다
+**오토인코더(Autoencoder)**는 차원 축소를 위해 encoder-decoder 구조를 사용한다. 오토인코더는 데이터를 압축하여 **latent vector**를 만든 후,
+이 벡터를 다시 복원하는 방식으로 학습한다. 
+-  **latent vector** : 잠재적 벡터,  데이터의 중요한 특징들을 압축한 벡터
+- 오토 인코더 후 라텐트 벡터로 dnn 출력이 가능한가? o , 이상치 탐지가 가능하고, 차원의 축소가 목적이다. 
+### 차원 축소
+차원 축소는 데이터의 특징을 유지하면서, 불필요한 데이터를 줄여서 학습을 더 효율적으로 만드는 방법이다. 
+**PCA**와 **오토인코더**는 이 목표를 달성하는 대표적인 방법으로, 둘 다 **latent space**를 생성하여 모델의 입력 차원을 줄여준다. 
+PCA는 선형적인 방식으로, 오토인코더는 비선형적인 방식으로 차원을 축소할 수 있다.
+
+### Transformer
+- 주로 번역, 텍스트 생성, 그리고 시퀀스 데이터에 특화된 모델
+**Transformer** 모델은 시퀀스 데이터에 대해 **self-attention**과 **multi-head attention**을 이용해 중요한 정보를 추출 
+- **Self-attention** : 각 단어가 다른 단어에 얼마나 집중해야 하는지를 결정하는 방식, 단어 간의 관계를 잘 파악할 수 있음  
+- **Multi-head attention** : 여러 개의 attention heads를 사용해, 각기 다른 시각에서 정보를 병렬적으로 처리
+- **embedding**
+- **Position embedding** : 입력 데이터의 순서를 나타내는 정보로, 시퀀스 모델에 필수적인 요소
+
+주로 번역, 텍스트 생성, 그리고 시퀀스 데이터에 특화된 모델
+
+### CNN 변형 모델
+1. **SENet**
+- 각 채널이 가진 정보의 중요도를 동적으로 계산해, 중요한 채널에 집중하도록 하는 모델
+	-https://deep-learning-study.tistory.com/539	
+	-https://ffighting.net/deep-learning-paper-review/vision-model/senet/
+	- https://arxiv.org/abs/1709.01507https://github.com/hujie-frank/SENet
+	- CNN에서는 각 채널이 특정 정보를 담고 있지만 모든 정보가 중요한 것은 아님 따라서, 중요한 정보가 담긴 채널에만 집중하고 나머지는 무시하는 기능이 필요
+	- Convolution, Activation, Pooling을 거치며 일부 중요한 정보가 더 두드러지긴 하지만, 이를 명확하게 조정하는 것은 불가능함
+	 SE는 정보의 압축(Squeeze) 중요도계산 (Excitation)을 통해 성능을 향상
+2.  **GoogleNet**
+-Inception 모델을 기반으로, 여러 크기의 필터를 동시에 사용하여 다양한 특징을 추출
+-https://arxiv.org/abs/1409.4842https://www.ytimes.co.kr/news/articleView.html?idxno=7149
+3.  **Xception**
+- Depthwise Separable Convolution을 사용하여 연산을 효율적으로 처리하는 모델로, Inception보다 더 나은 성능을 보임
+- https://arxiv.org/abs/1610.02357https://towardsdatascience.com/review-xception-with-depthwise-separable-convolution-better-than-inception-v3-image-dc967dd42568
+- Depthwise Separable Convolution : 필터마다 별도의 필터를 사용
+- Step 1: Depthwise Convolution
+	-Convolution에서는 모든 입력 채널을 고려하여 하나의 필터를 적용하지만, Depthwise Convolution에서는 각 채널마다 별도의 필터를 사용. 
+  이로 인해 채널 간의 상호작용은 고려되지 않고 각 채널은 독립적으로 처리
+- Step 2: Pointwise Convolution
+	-Depthwise Convolution을 통해 각 채널별로 처리된 출력을 다시 결합하기 위해 1x1 Convolution을 적용, 
+  이 과정에서 채널 간의 상호작용을 고려하며, Depthwise Convolution으로 축소된 연산 비용을 보충
+- Xception에는 Step 2 이후 Step 1을 수행
+- 원래 Inception 모듈에서는 첫 번째 연산 후 비선형성이 있으나,
+  수정된 깊이별 분리형 합성곱인 Xception에서는 중간 ReLU 비선형성이 없음
+4. **CBAM**
+- 입력 피처 맵에서 중요한 정보를 강조하고 덜 중요한 정보를 억제하는 Attention 모듈이다. 채널과 공간 차원에서 각각 Attention을 적용
+-arxiv.org/pdf/1807.06521.pdfhttps://blog.naver.com/winddori2002/222057978305https://ffighting.net/deep-learning-paper-review/vision-model/cbam/
+- CBAM(Channel and Spatial Attention Module)은 CNN(Convolutional Neural Networks)에서 성능을 향상시키기 위해 제안된 어텐션 모듈
+	-CBAM은 입력 피처 맵에서 중요한 정보를 강조하고 덜 중요한 정보를 억제함으로써, 네트워크가 더 중요한 특성에 집중할 수 있도록 도움
+	-Channel Attention과 Spatial Attention의 두 가지 어텐션 메커니즘을 결합한 구조
+	- Channel Attention Module : 먼저 입력 피처 맵에 대해 채널별로 중요한 정보를 학습하고, 채널별로 가중치를 적용 - https://zzziito.tistory.com/52
+	-Spatial Attention Module : 채널 어텐션이 적용된 피처 맵에 대해 공간적으로 중요한 영역을 학습하여 위치별로 다른 가중치를 적용- https://zzziito.tistory.com/53
+	- Global Average Pooling(정보를 압축) + Global Max Pooling(가장 의미 있는 정보 추출)
+5. - DenseNet
+6. parameter가 적으면서도 성능이 좋은 것
+### 과제: Transformer를 이용한 DSA 데이터 분류
+- DSA_features.csv을 **Transformer** 모델을 사용해 분류 작업을 수행
+
+교재 
+cnn p. 612- pooling의 목적 : 불변성, 정보 축약
