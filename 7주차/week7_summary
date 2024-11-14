@@ -1,0 +1,40 @@
+FCNN: 모든 입력 뉴런이 모든 출력 뉴런과 연결된 구조라서 이미지 같은 데이터에 공간적(local) 정보를 유지하지 못함
+CNN은 이미지를 입력으로 받았을 때, 이미지의 지역적 특성을 추출하는 데 특화되어 있음
+  - CNN의 Convolutional Layer는 필터를 통해 인접한 픽셀 정보 학습 가능 따라서 이미지의 공간적인 특성을 보존하고 분석하기 쉬움
+RNN: 시계열 데이터나 문장처럼 순서가 중요한 데이터를 학습하는 데 사용되지만, 기울기 소실 문제로 인해 긴 시퀀스에서는 정보가 제대로 전달되지 않음
+LSTM: RNN의 장기 의존성 문제를 해결한 모델로, cell state를 추가해 정보를 장기적으로 기억할 수 있게 함
+위의 문제점 :  gradient vanishing problem, number of parameter
+
+문제점을 해결하기 위해서 varient CNN이 나왔다.
+ResNet: skip connection을 사용해 기울기 소실 문제를 해결하고, 복잡한 네트워크에서도 학습이 용이
+  - 잔차 연결을 이용한다. 
+SENet: 각 채널의 중요도를 학습해 효율적으로 모델 성능을 높임
+  - 채널 중요도 추출은 pooling 사용
+Inception: 여러 크기의 필터를 사용해 다양한 특성을 추출할 수 있어, 공간적 정보와 패턴을 더 다양하게 반영
+  - 서로 다른 필터를 적용해 서로 다른 단을 뽑음 
+depth wise separable convolution
+Xception
+CBAM : pooling layer을 이용하여 특성을 추출
+
+Transformer: Attention 메커니즘을 통해 필요한 정보에만 집중하며, 특히 multi-head attention으로 여러 패턴을 병렬로 학습
+1. self-attention : 필요한 정보에만 집중하는 것  
+    - 지피티를 이용해서 번역했을 때 더 좋은 이유 : 잘 만들어진 모델에학습 데이터가 많아서 , attention 모든 정보가 중요하지 않기 때문에 중요한 것에만 집중하자
+2. multihead attention :입력 데이터의 서로 다른 부분이 서로에게 주의를 기울이는 방식을 여러 번 수행하여 다양한 패턴을 학습하는 방식, 여러 개의 Attention "머리(Head)"를 사용하여 정보를 병렬적으로 처리
+    - ff
+3. embedding →vector 임베딩
+4. position embedding : 입력 데이터(주로 시퀀스 데이터) 내에서 각 요소의 **위치 정보**를 제공하는 역할
+- p722 730 , 741
+5. 비전 트랜스포머 
+  - 
+Autoencoder: 차원 축소와 정보 압축에 유용하며, 특히 이상 탐지에서도 reconstruction error를 활용
+
+시험 
+- 자신의 깃허브만 참조 가능 
+
+과제 
+1. linear ae 
+2. non-linear Auto encoder
+- training/ test → ab/non → ae → test : ab/non
+1. 767p denoising auto encoder  → noise , normal
+    1. 766p ae(lstm , cnn)→optional 
+- dsa - lyingbectkt, sitinf, nornal
